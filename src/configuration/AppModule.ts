@@ -1,3 +1,4 @@
+// src/configuration/AppModule.ts
 import { Module } from '@nestjs/common';
 import { UserController } from '../adapters/controllers/UserController';
 import { UserService } from '../application/service/UserService';

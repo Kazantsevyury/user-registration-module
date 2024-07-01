@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { User } from '../../core/domain/User';
 import { CreateUserDto } from '../dto/CreateUserDto';
+import { UpdateUserDto } from '../dto/UpdateUserDto';
 import { UserRepository } from '../../core/domain/UserRepository';
 import { UserRole } from '../../core/domain/UserRole';
 
@@ -11,7 +12,7 @@ export class UserService {
     ) {}
 
     async create(createUserDto: CreateUserDto): Promise<User> {
-        const users = this.userRepository.readFromFile();
+        const users = await this.userRepository.findAll();
         const newUser = new User(
             users.length ? users[users.length - 1].id + 1 : 1,
             createUserDto.email,
@@ -20,8 +21,29 @@ export class UserService {
             new Date(),
             new Date()
         );
-        users.push(newUser);
-        this.userRepository.writeToFile(users);
+        await this.userRepository.create(newUser);
         return newUser;
+    }
+
+    async findOne(id: number): Promise<User | null> {
+        return this.userRepository.findOne(id);
+    }
+
+    async remove(id: number): Promise<void> {
+        await this.userRepository.remove(id);
+    }
+
+    async findAll(): Promise<User[]> {
+        return this.userRepository.findAll();
+    }
+
+    async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
+        const user = await this.userRepository.findOne(id);
+        if (!user) {
+            return null;
+        }
+        const updatedUser = { ...user, ...updateUserDto, updatedAt: new Date() };
+        await this.userRepository.update(id, updatedUser);
+        return updatedUser;
     }
 }

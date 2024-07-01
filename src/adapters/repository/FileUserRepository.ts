@@ -14,7 +14,7 @@ export class FileUserRepository implements UserRepository {
         }
     }
 
-    readFromFile(): User[] {
+    private readFromFile(): User[] {
         const fileData = fs.readFileSync(this.filePath, 'utf8');
         return JSON.parse(fileData).map((user: any) => new User(
             user.id,
@@ -26,7 +26,38 @@ export class FileUserRepository implements UserRepository {
         ));
     }
 
-    writeToFile(users: User[]): void {
+    private writeToFile(users: User[]): void {
         fs.writeFileSync(this.filePath, JSON.stringify(users, null, 2));
+    }
+
+    async findAll(): Promise<User[]> {
+        return this.readFromFile();
+    }
+
+    async findOne(id: number): Promise<User | null> {
+        const users = this.readFromFile();
+        const user = users.find(user => user.id === id);
+        return user || null;
+    }
+
+    async create(user: User): Promise<void> {
+        const users = this.readFromFile();
+        users.push(user);
+        this.writeToFile(users);
+    }
+
+    async update(id: number, updatedUser: User): Promise<void> {
+        const users = this.readFromFile();
+        const userIndex = users.findIndex(user => user.id === id);
+        if (userIndex !== -1) {
+            users[userIndex] = updatedUser;
+            this.writeToFile(users);
+        }
+    }
+
+    async remove(id: number): Promise<void> {
+        let users = this.readFromFile();
+        users = users.filter(user => user.id !== id);
+        this.writeToFile(users);
     }
 }
