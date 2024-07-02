@@ -38,6 +38,7 @@ export class UserController {
         return this.userService.remove(userId);
     }
 
+
     @Put(':id')
     async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
         const userId = parseInt(id, 10);
