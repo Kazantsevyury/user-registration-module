@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "dev": "nodemon src/main.ts",
-    "test": "ts-node -r tsconfig-paths/register node_modules/.bin/jest",
+    "test": "jest",
     "lint": "ts-node -r tsconfig-paths/register node_modules/.bin/eslint . --ext .ts",
     "build": "ts-node -r tsconfig-paths/register node_modules/.bin/webpack"
   },
@@ -20,7 +20,8 @@
     "express": "^4.19.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^10.3.10",
@@ -38,6 +39,7 @@
     "prettier": "^3.3.2",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.3",
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
