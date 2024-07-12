@@ -4,6 +4,7 @@ import { CreateUserDto } from '../dto/CreateUserDto';
 import { UpdateUserDto } from '../dto/UpdateUserDto';
 import { UserRepository } from '../../core/domain/UserRepository';
 import { UserRole } from '../../core/domain/UserRole';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -13,10 +14,12 @@ export class UserService {
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const users = await this.userRepository.findAll();
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
         const newUser = new User(
             users.length ? users[users.length - 1].id + 1 : 1,
             createUserDto.email,
-            createUserDto.password,
+            hashedPassword,
             UserRole.USER,
             new Date(),
             new Date()
@@ -29,6 +32,11 @@ export class UserService {
         return this.userRepository.findOne(id);
     }
 
+    async findOneByEmail(email: string): Promise<User | null> {
+        const users = await this.userRepository.findAll();
+        return users.find(user => user.email === email) || null;
+    }
+
     async remove(id: number): Promise<void> {
         await this.userRepository.remove(id);
     }
@@ -38,7 +46,7 @@ export class UserService {
     }
 
     async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-        const user = await this.userRepository.findOne(id);
+        const user = await this.findOne(id);
         if (!user) {
             return null;
         }
